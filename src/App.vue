@@ -1,19 +1,17 @@
-
-
 <template>
   <div class="app-wrapper" :class="weatherClass">
-    
+
     <div class="content">
-      <SearchBar class="search-bar" @select="setPlace"/>
-      <SpinnerLoading v-if="isLoading"/>
+      <SearchBar class="search-bar" @select="setPlace" />
+      <SpinnerLoading v-if="isLoading" />
       <div v-else-if="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
-      <div v-else class="content-wrapper">  
+      <div v-else class="content-wrapper">
         <div class="hero" :class="weatherClass">
           <div class="weather">
-              <component class="weather-icon" :is="icon" v-if="icon"/>
-              <p class="weather-description">{{ description }}</p>
+            <component class="weather-icon" :is="icon" v-if="icon" />
+            <p class="weather-description">{{ description }}</p>
           </div>
           <div class="general-info">
             <p class="temperature">{{ Math.round(temperature) }}°</p>
@@ -26,34 +24,28 @@
         <div class="glass-panel">
           <div class="weather-cards">
             <div class="weather-card">
-              <p class="card-label">Humidity</p>
+              <p class="card-label">Вологість</p>
               <p class="card-value">{{ humidity }}%</p>
-              <IconHumidity class="card-icon"/>
+              <IconHumidity class="card-icon" />
             </div>
             <div class="weather-card">
-              <p class="card-label">Wind Speed</p>
+              <p class="card-label">Швидкість вітру</p>
               <p class="card-value">{{ windSpeed }} м/с</p>
-              <IconWindbag class="card-icon"/>
+              <IconWindbag class="card-icon" />
             </div>
             <div class="weather-card">
-              <p class="card-label">Wind Direction</p>
+              <p class="card-label">Напрямок вітру</p>
               <p class="card-value">{{ setWindDirection() }}</p>
-              <DirectionArrow class="card-icon" :style="{ transform: `rotate(${weatherData?.current?.wind_deg || 0}deg)` }"/>
+              <DirectionArrow class="card-icon"
+                :style="{ transform: `rotate(${weatherData?.current?.wind_deg || 0}deg)` }" />
             </div>
           </div>
-          
-          <HourlyForecast
-            class="hourly-forecast"
-            v-if="!isLoading && weatherData && weatherData.hourly.length"
-            :data="weatherData"
-            :timezone="weatherData.timezone"
-          />
-          <DailyForecast
-            class="daily-forecast"
-            v-if="!isLoading && weatherData && weatherData.daily.length"
-            :data="weatherData"
-            :timezone="weatherData.timezone"
-          />
+          <p class="forecast-label">Щогодинний прогноз</p>
+          <HourlyForecast class="hourly-forecast" v-if="!isLoading && weatherData && weatherData.hourly.length"
+            :data="weatherData" :timezone="weatherData.timezone" />
+          <p class="forecast-label">Щоденний прогноз</p>
+          <DailyForecast class="daily-forecast" v-if="!isLoading && weatherData && weatherData.daily.length"
+            :data="weatherData" :timezone="weatherData.timezone" />
         </div>
       </div>
     </div>
@@ -61,13 +53,13 @@
 </template>
 
 <style scoped>
-
 .app-wrapper {
   min-height: 100vh;
   width: 100vw;
   background-size: cover;
   background-position: center;
   color: white;
+
 
   &.rainy {
     background-image: url('/images/rainy.jpg');
@@ -96,13 +88,13 @@
 
 .hero {
   display: flex;
-  flex-direction: column; /* default vertical for mobile */
+  flex-direction: column;
   align-items: center;
   gap: 20px;
   padding: 20px 0;
 }
 
-.weather{
+.weather {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -111,7 +103,7 @@
   padding: 50px 0 0;
 }
 
-.weather-icon{
+.weather-icon {
   width: 150px;
 }
 
@@ -120,17 +112,17 @@
 }
 
 
-.general-info{
+.general-info {
   display: flex;
-  align-items:last baseline;
+  align-items: last baseline;
 
 }
 
-.info-wrapper{
+.info-wrapper {
   font-size: 16px;
 }
 
-.temperature{
+.temperature {
   font-size: 70px;
   width: 3ch;
   display: inline-block;
@@ -141,32 +133,50 @@
 
 .weather-cards {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.weather-card {
   color: white;
-  font-size: 14px;
-}
-
-.weather-cards > div {
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
 }
 
-.weather-cards svg {
-  width: 25px;
-  height: 25px;
-  flex-shrink: 0;
-  display: block;
+.card-label {
+  font-size: 14px;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.card-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.forecast-label {
+  font-size: 20px;
+  text-align: center;
 }
 
 .glass-panel {
-  background: rgba(200, 200, 200, 0.15); /* translucent white */
+  background: rgba(200, 200, 200, 0.15);
   border-radius: 16px;
   border-bottom-left-radius: 0%;
   border-bottom-right-radius: 0%;
   padding: 20px;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* for Safari */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
@@ -176,6 +186,7 @@
 }
 
 @media (min-width: 768px) {
+
   .app-wrapper.rainy,
   .app-wrapper.sunny,
   .app-wrapper.night,
@@ -196,10 +207,10 @@
   }
 
   .hero {
-    flex-direction: row;      
-    justify-content: center;  
-    align-items:flex-end;       
-    gap: 40px;               
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 40px;
     padding: 50px 0;
     border-radius: 30px;
 
@@ -214,19 +225,22 @@
     &.night {
       background-image: url('/images/nightDesktop.jpg');
     }
+
     &.cloudy {
       background-image: url('/images/cloudyDesktop.jpg');
     }
+
     &.rainy {
       background-image: url('/images/rainyDesktop.jpg');
     }
+
     &.snowy {
       background-image: url('/images/snowyDesktop.jpg');
     }
   }
 
   .weather {
-    flex: 0 0 auto;         
+    flex: 0 0 auto;
     text-align: center;
     padding: 0;
   }
@@ -245,65 +259,67 @@
     margin: 0;
     width: 100%;
     backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px); 
+    -webkit-backdrop-filter: blur(0px);
     box-shadow: none;
     border: none;
   }
 
   .weather-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin: 40px 0;
-  padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin: 40px 0;
+    padding: 0 20px;
+  }
+
+  .weather-card {
+    background: #1e1e1e;
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-label {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
+
+  .card-value {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+  }
+
+  .hourly-forecast {
+    margin-bottom: 10px;
+  }
+
+  .error-message {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: red;
+    border: 1px solid red;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px;
+  }
+
 }
-
-.weather-card {
-  background: #1e1e1e;
-  color: white;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 150px;
-  position: relative;
-  overflow: hidden;
-}
-
-.card-label {
-  font-size: 14px;
-  color: #aaa;
-  margin-bottom: 10px;
-}
-
-.card-value {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.card-icon {
-  width: 40px;
-  height: 40px;
-  margin: 0 auto;
-}
-
-.error-message {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: red;
-  border: 1px solid red;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  margin: 20px;
-}
-
-}
-
-
 </style>
 
 
@@ -316,7 +332,7 @@ import DirectionArrow from "./components/icons/IconDirectionArrow.vue";
 import IconWindbag from "./components/icons/IconWindbag.vue";
 
 
-import { defineAsyncComponent, onMounted, ref, shallowRef} from "vue";
+import { defineAsyncComponent, onMounted, ref, shallowRef } from "vue";
 
 import SearchBar from "./components/SearchBar.vue";
 import HourlyForecast from "./components/HourlyForecast.vue";
@@ -362,19 +378,19 @@ function getWeatherClass() {
 }
 
 
-function setPlace(place){
+function setPlace(place) {
   placeData.value = place
   handlePlaceSelection()
 }
 
-async function handlePlaceSelection(){
+async function handlePlaceSelection() {
   city.value = placeData.value.name
   country.value = placeData.value.countryName
   const WEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_KEY
 
   isLoading.value = true
   errorMessage.value = ""
-  try{
+  try {
     const response = await fetch(
       `https://api.openweathermap.org/data/3.0/onecall?lat=${placeData.value.lat}&lon=${placeData.value.lng}&appid=${WEATHER_API_KEY}&exclude=minutely,alerts&units=metric&lang=en`
     )
@@ -389,7 +405,7 @@ async function handlePlaceSelection(){
       humidity.value = weatherData.value.current.humidity
       description.value = translateDescription(weatherData.value.current.weather[0].description)
       windSpeed.value = weatherData.value.current.wind_speed
-      
+
       updateTime()
       setWeatherIcon()
       getWeatherClass()
@@ -450,7 +466,7 @@ const descriptionTranslation = {
   "rain and snow": "Дощ та сніг",
   "light shower snow": "Слабкий короткий сніг",
 
-  // Atmosphere
+
   "mist": "Туман",
   "smoke": "Дим",
   "haze": "Мрячний туман",
@@ -464,11 +480,11 @@ const descriptionTranslation = {
 }
 
 
-  function translateDescription(desc) {
-    return descriptionTranslation[desc] || desc;
-  }
+function translateDescription(desc) {
+  return descriptionTranslation[desc] || desc;
+}
 
-function updateTime(){
+function updateTime() {
   const utcDate = new Date();
   const localTimeStr = utcDate.toLocaleTimeString('uk-UA', {
     timeZone: weatherData.value.timezone,
@@ -489,10 +505,10 @@ function updateTime(){
 
 
 function setWeatherIcon() {
-    const iconName = getWeatherIcon(weatherData.value.current)
-    icon.value = defineAsyncComponent(() =>
-      import(`./components/icons/Icon${iconName}.vue`)
-    );
+  const iconName = getWeatherIcon(weatherData.value.current)
+  icon.value = defineAsyncComponent(() =>
+    import(`./components/icons/Icon${iconName}.vue`)
+  );
 }
 
 
@@ -530,7 +546,7 @@ function setWindDirection() {
 }
 
 
-onMounted(async () =>{
+onMounted(async () => {
 
   const currentDate = new Date()
   const secondsUntilNextMinute = 60 - currentDate.getSeconds()
@@ -541,38 +557,34 @@ onMounted(async () =>{
     setInterval(updateTime, 60 * 1000)
   }, secondsUntilNextMinute * 1000)
 
-  setInterval(handlePlaceSelection, 15 * 60 * 1000)
+  setInterval(handlePlaceSelection, 5 * 60 * 1000)
 
   var defaultPlace = "Lutsk"
-     const GEONAMES_API_NAME = import.meta.env.VITE_GEONAMES_USERNAME
-     isLoading.value = true
-     errorMessage.value = ""
-     try {
-      const response = await fetch(
-        `https://secure.geonames.org/searchJSON?q=${defaultPlace}&maxRows=1&username=${GEONAMES_API_NAME}`
-      )
-      const data = await response.json()
+  const GEONAMES_API_NAME = import.meta.env.VITE_GEONAMES_USERNAME
+  isLoading.value = true
+  errorMessage.value = ""
+  try {
+    const response = await fetch(
+      `https://secure.geonames.org/searchJSON?q=${defaultPlace}&maxRows=1&username=${GEONAMES_API_NAME}`
+    )
+    const data = await response.json()
 
-      if (data.geonames && data.geonames.length > 0) {
-        setPlace(data.geonames[0])
-      } else {
-        errorMessage.value = "Не знайдено місто за замовчуванням."
-      }
-    } catch (err) {
-      console.error("GeoNames error:", err)
-      errorMessage.value = "Помилка при отриманні початкового місця."
-    } finally {
-      isLoading.value = false
+    if (data.geonames && data.geonames.length > 0) {
+      setPlace(data.geonames[0])
+    } else {
+      errorMessage.value = "Не знайдено місто за замовчуванням."
     }
+  } catch (err) {
+    console.error("GeoNames error:", err)
+    errorMessage.value = "Помилка при отриманні початкового місця."
+  } finally {
+    isLoading.value = false
+  }
 
-    window.addEventListener('offline', () => {
-      errorMessage.value = "Немає підключення до Інтернету"
-    })
-    window.addEventListener('online', () => errorMessage.value = "")
-    
+  window.addEventListener('offline', () => {
+    errorMessage.value = "Немає підключення до Інтернету"
+  })
+  window.addEventListener('online', () => errorMessage.value = "")
+
 })
 </script>
-
-
-
-

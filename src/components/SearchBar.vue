@@ -1,79 +1,72 @@
 <template>
-    <div class="search-bar" @click="handleOpenClick" ref="searchBar">
-  <div class="search-wrapper" >
-    <input
-      v-model="searchQuery"
-      placeholder="Шукати населений пункт..."
-      class="search-input"
-    />
-    <IconSearch class="icon-search"/>
+  <div class="search-bar" @click="handleOpenClick" ref="searchBar">
+    <div class="search-wrapper">
+      <input v-model="searchQuery" placeholder="Шукати населений пункт..." class="search-input" />
+      <IconSearch class="icon-search" />
+    </div>
+
+    <ul v-if="showResults && results.length" class="results-list">
+      <li v-for="place in results" :key="place.geonameId" @click="fetchData(place)">
+        {{ place.name }}, {{ place.adminName1 }}, {{ place.countryName }}
+      </li>
+    </ul>
   </div>
+</template>
 
-  <ul v-if="showResults && results.length" class="results-list">
-    <li 
-      v-for="place in results" 
-      :key="place.geonameId" 
-      @click="fetchData(place)">
-      {{ place.name }}, {{ place.adminName1 }}, {{ place.countryName }}
-    </li>
-  </ul>
-</div>
-  </template>
-  
-  <script setup>
-  import { onMounted, ref } from 'vue'
-  import { watchDebounced } from '@vueuse/core'
+<script setup>
+import { onMounted, ref } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 
-  import IconSearch from './icons/IconSearch.vue'
-  
-  const searchQuery = ref('')
-  const results = ref([])
-  const showResults = ref(false)
-  const emit = defineEmits(['select'])
-  const searchBar = ref(null)
-  
-  watchDebounced(
-    searchQuery,
-    (query) => {
-      if (query.trim().length > 2) {
-        handleSearch(query)
-        showResults.value = true
-      } else {
-        results.value = []
-        showResults.value = false
-      }
-    },
-    { debounce: 1000 }
-  )
-  
-  async function handleSearch(query) {
-    const GEONAMES_USERNAME = import.meta.VITE_GEONAMES_USERNAME
-    const response = await fetch(
-      `https://secure.geonames.org/searchJSON?q=${query}&maxRows=5&countryBias=UA&username=${GEONAMES_USERNAME}&lang=uk`
-    )
-    const data = await response.json()
-    results.value = data.geonames || []
-  }
+import IconSearch from './icons/IconSearch.vue'
 
-  function fetchData(place){
-    console.log(place)
-    emit('select', place)
-    showResults.value = false
-  }
+const searchQuery = ref('')
+const results = ref([])
+const showResults = ref(false)
+const emit = defineEmits(['select'])
+const searchBar = ref(null)
 
-  function handleCloseClick() {
-    if (searchBar.value && !searchBar.value.contains(event.target)) {
+watchDebounced(
+  searchQuery,
+  (query) => {
+    if (query.trim().length > 2) {
+      handleSearch(query)
+      showResults.value = true
+    } else {
+      results.value = []
       showResults.value = false
     }
-  }
+  },
+  { debounce: 500 }
+)
 
-  function handleOpenClick() {
-    showResults.value = true
-  }
+async function handleSearch(query) {
+  const GEONAMES_API_NAME = import.meta.env.VITE_GEONAMES_USERNAME
+  const response = await fetch(
+    `https://secure.geonames.org/searchJSON?q=${query}&maxRows=5&countryBias=UA&username=${GEONAMES_API_NAME}&lang=uk`
+  )
+  const data = await response.json()
+  results.value = data.geonames || []
+}
 
-   onMounted(async () => {
-    document.addEventListener('click', handleCloseClick)
-   })
+function fetchData(place) {
+  console.log(place)
+  emit('select', place)
+  showResults.value = false
+}
+
+function handleCloseClick() {
+  if (searchBar.value && !searchBar.value.contains(event.target)) {
+    showResults.value = false
+  }
+}
+
+function handleOpenClick() {
+  showResults.value = true
+}
+
+onMounted(async () => {
+  document.addEventListener('click', handleCloseClick)
+})
 </script>
 
 <style scoped>
@@ -148,6 +141,4 @@
 .results-list li:hover {
   background: #efefef;
 }
-
-
 </style>

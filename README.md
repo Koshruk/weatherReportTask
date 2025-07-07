@@ -1,2 +1,4 @@
-Netlify deployment link : https://weatherreporttech.netlify.app/
+# Weather Report App
+
+🔗 [Live Demo](https://weatherreporttech.netlify.app/)
 ```
